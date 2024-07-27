@@ -1,0 +1,70 @@
+# Byte-compiled / optimized / DLL files
+*.class
+*.war
+*.jar
+
+# Logs
+*.log
+*.out
+
+# Spring Boot specific files
+spring.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.war
+*.ear
+*.zip
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+# Sonarlint plugin
+.idea/sonarlint/
+
+# VS Code
+.vscode/
+
+# STS
+.classpath
+.project
+.settings/
+bin/
+target/
+spring.log
+
+# maven
+log/
+target/
+!pom.xml
+**/target/
+
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+.gradle
+build/
+
+# Node
+node_modules/
+yarn.lock
+
+# Logs
+logs/
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Configuration files
+.env
