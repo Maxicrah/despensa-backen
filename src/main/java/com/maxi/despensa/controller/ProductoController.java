@@ -1,5 +1,6 @@
 package com.maxi.despensa.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maxi.despensa.model.Producto;
 import com.maxi.despensa.service.IProductoService;
 
@@ -22,11 +26,27 @@ public class ProductoController {
 	@Autowired
 	private IProductoService prodServ;
 	
-	@PostMapping("/crear")
-	public String createProduct(@RequestBody Producto prod) {
-		prodServ.createProduct(prod);
-		return "creado pibe";
-	}
+	@Autowired
+    private ObjectMapper objectMapper;
+	
+    @PostMapping("/crear")
+    public String createProduct(@RequestPart("product") String productJson, @RequestPart("file") MultipartFile file) {
+        try {
+            // Convertir JSON de String a objeto Producto
+            Producto producto = objectMapper.readValue(productJson, Producto.class);
+
+            // Llamar al servicio para crear el producto
+            prodServ.createProduct(producto, file);
+            return "Producto creado con éxito";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error al procesar la solicitud: " + e.getMessage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error desconocido: " + e.getMessage();
+        }
+    }
+
 	
 	@GetMapping("/traer/{id}")
 	public Producto getProduct(@PathVariable(required = true) Long id) {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.maxi.despensa.dao.IProductoDAO;
 import com.maxi.despensa.model.Producto;
@@ -13,12 +14,16 @@ public class ProductoService implements IProductoService{
 	
 	@Autowired
 	private IProductoDAO prodDAO;
+	@Autowired
 	
+    private IStorageService storageService;
 	
-	@Override
-	public void createProduct(Producto prod) {
-		prodDAO.save(prod);
-	}
+    @Override
+    public void createProduct(Producto prod, MultipartFile file) {
+        String imageURL = storageService.store(file);
+        prod.setImagen(imageURL);
+        prodDAO.save(prod);
+    }
 
 	@Override
 	public void deleteProduct(Long id) {
