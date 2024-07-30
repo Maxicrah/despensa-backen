@@ -34,7 +34,6 @@ public class ProductoController {
 	 @PostMapping("/crear")
 	    public ResponseEntity<Producto> createProducto(@RequestParam("nombre") String nombre,
 	                                                   @RequestParam("descripcion") String descripcion,
-	                                                   @RequestParam("precio") Double precio,
 	                                                   @RequestParam("costo_adquisicion") Double costoAdquisicion,
 	                                                   @RequestParam("fecha_vencimiento") LocalDate fechaVencimiento,
 	                                                   @RequestParam("marca") String marca,
@@ -46,7 +45,7 @@ public class ProductoController {
 	        Producto producto = new Producto();
 	        producto.setNombre(nombre);
 	        producto.setDescripcion(descripcion);
-	        producto.setPrecio(precio);
+	        //producto.setPrecio(precio);
 	        producto.setCosto_adquisicion(costoAdquisicion);
 	        producto.setFecha_vencimiento(fechaVencimiento);
 	        producto.setFecha_ingreso(LocalDate.now());

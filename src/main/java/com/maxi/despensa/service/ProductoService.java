@@ -22,7 +22,11 @@ public class ProductoService implements IProductoService{
     public Producto createProduct(Producto prod) {
         //String imageURL = storageService.store(file);
         //prod.setImagen(imageURL);
-       return prodDAO.save(prod);
+    		//calcular el 30% para vender el producto
+    		Double porcentaje = 0.0;
+    		porcentaje = prod.getCosto_adquisicion() * 1.3;
+    		prod.setPrecio(porcentaje);
+    		return prodDAO.save(prod);
     }
 
 	@Override
