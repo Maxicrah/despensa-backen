@@ -42,6 +42,8 @@ public class FileSystemStorageService implements IStorageService {
 			String filename = file.getOriginalFilename();
 			Path destinationFile = rootLocation.resolve(Paths.get(filename))
 					.normalize().toAbsolutePath();
+			System.out.println("Path to file: " + file.toString());
+
 			try(InputStream inputStream = file.getInputStream()){
 				Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
 			}

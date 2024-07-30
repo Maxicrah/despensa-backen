@@ -1,9 +1,10 @@
 package com.maxi.despensa.controller;
 
-import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maxi.despensa.model.Producto;
 import com.maxi.despensa.service.IProductoService;
+import com.maxi.despensa.service.IStorageService;
 
 @RestController
 @RequestMapping("/productos")
@@ -27,25 +28,38 @@ public class ProductoController {
 	private IProductoService prodServ;
 	
 	@Autowired
-    private ObjectMapper objectMapper;
-	
-    @PostMapping("/crear")
-    public String createProduct(@RequestPart("product") String productJson, @RequestPart("file") MultipartFile file) {
-        try {
-            // Convertir JSON de String a objeto Producto
-            Producto producto = objectMapper.readValue(productJson, Producto.class);
+	private IStorageService storageService;
 
-            // Llamar al servicio para crear el producto
-            prodServ.createProduct(producto, file);
-            return "Producto creado con éxito";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Error al procesar la solicitud: " + e.getMessage();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Error desconocido: " + e.getMessage();
-        }
-    }
+	
+	 @PostMapping("/crear")
+	    public ResponseEntity<Producto> createProducto(@RequestParam("nombre") String nombre,
+	                                                   @RequestParam("descripcion") String descripcion,
+	                                                   @RequestParam("precio") Double precio,
+	                                                   @RequestParam("costo_adquisicion") Double costoAdquisicion,
+	                                                   @RequestParam("fecha_vencimiento") LocalDate fechaVencimiento,
+	                                                   @RequestParam("marca") String marca,
+	                                                   @RequestParam("stock") Long stock,
+	                                                   @RequestParam("promocion") String promocion,
+	                                                   @RequestParam("notas_adicionales") String notasAdicionales,
+	                                                   @RequestParam("imagen") MultipartFile imagen) {
+	        String imageName = storageService.store(imagen);
+	        Producto producto = new Producto();
+	        producto.setNombre(nombre);
+	        producto.setDescripcion(descripcion);
+	        producto.setPrecio(precio);
+	        producto.setCosto_adquisicion(costoAdquisicion);
+	        producto.setFecha_vencimiento(fechaVencimiento);
+	        producto.setFecha_ingreso(LocalDate.now());
+	        producto.setImagen(imageName);
+	        producto.setMarca(marca);
+	        producto.setStock(stock);
+	        producto.setPromocion(promocion);
+	        producto.setNotas_adicionales(notasAdicionales);
+
+	        Producto createdProducto = prodServ.createProduct(producto);
+	        return ResponseEntity.ok(createdProducto);
+	    }
+
 
 	
 	@GetMapping("/traer/{id}")
