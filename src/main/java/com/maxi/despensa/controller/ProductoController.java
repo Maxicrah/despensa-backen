@@ -1,7 +1,9 @@
 package com.maxi.despensa.controller;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -72,9 +74,11 @@ public class ProductoController {
 	}
 	
 	@DeleteMapping("/eliminar/{id}")
-	public String deleteProducto(@PathVariable (required = true) Long id) {
-		prodServ.deleteProduct(id);
-		return "eliminado pibe";
+	public ResponseEntity<?> eliminarProducto(@PathVariable Long id) {
+	    prodServ.deleteProduct(id);
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "Producto eliminado correctamente");
+	    return ResponseEntity.ok(response);
 	}
 	
 	@PutMapping("/editar/{id}")
