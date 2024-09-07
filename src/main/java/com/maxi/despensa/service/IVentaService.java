@@ -16,4 +16,5 @@ public interface IVentaService {
 	public List<Venta> getVentas();
 	//editar una venta
 	public Venta editVenta(Long id, Venta venta);
+	
 }

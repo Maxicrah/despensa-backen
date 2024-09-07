@@ -16,7 +16,12 @@ public class ClienteService implements IClienteService{
 	
 	@Override
 	public Cliente findCliente(Long id) {
-		return clienteDAO.findById(id).orElse(null);
+		try {
+			return clienteDAO.findById(id).orElse(null);
+		}catch(Exception e) {
+			System.out.println("error: " + e);
+			return null;
+		}
 	}
 
 	@Override
@@ -25,18 +30,16 @@ public class ClienteService implements IClienteService{
 	}
 
 	@Override
-	public void createCliente(Cliente cli) {
-		// buscar si ya existe un cliente con el mismo DNI
-	    Cliente clienteExistente = clienteDAO.findClienteByDni(cli.getDni());
-	    
-	    // si clienteExistente no es null, significa que ya hay un cliente con ese DNI
-	    if (clienteExistente != null) {
-	        System.out.println("Cliente con DNI repetido: " + cli.getDni());
-	        throw new RuntimeException("Cliente con DNI repetido");
-	    }
-	    
-	    clienteDAO.save(cli);
-	}
+	 public void createCliente(Cliente cli) {
+        //buscar si ya existe un cliente con el mismo DNI
+        Cliente clienteExistente = clienteDAO.findClienteByDni(cli.getDni());
+        
+        //si clienteExistente no es null, significa que ya hay un cliente con ese DNI
+        if (clienteExistente != null) {
+            throw new RuntimeException("Cliente con DNI repetido: " + cli.getDni());
+        }
+        clienteDAO.save(cli);
+    }
 
 	@Override
 	public List<Cliente> findClientes() {
@@ -61,6 +64,11 @@ public class ClienteService implements IClienteService{
 	@Override
 	public Cliente findClienteByDni(String dni) {
 		return clienteDAO.findClienteByDni(dni);
+	}
+
+	@Override
+	public void deleteClienteByDni(String dni) {
+		clienteDAO.delete(this.findClienteByDni(dni));
 	}
 
 }

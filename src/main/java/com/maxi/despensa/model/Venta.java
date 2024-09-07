@@ -43,5 +43,7 @@ public class Venta {
 						)
 				)
 	private List<Producto> lista_productos;
-	
+    @ManyToOne
+    @JoinColumn(name = "cuenta_id")
+    private Cuenta cuenta;
 }

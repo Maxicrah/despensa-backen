@@ -1,8 +1,11 @@
 package com.maxi.despensa.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,10 +26,18 @@ public class ClienteController {
 	private IClienteService cliServ;
 
 	@PostMapping("/crear")
-	public String createCliente(@RequestBody Cliente cli) {
-		cliServ.createCliente(cli);
-		return "Cliente creado pa";
+	public ResponseEntity<Map<String, String>> crearCliente(@RequestBody Cliente cliente) {
+	    cliServ.createCliente(cliente);
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "Cliente creado satisfactoriamente");
+	    return ResponseEntity.ok(response);
 	}
+	
+//	public String createCliente(@RequestBody Cliente cli) {
+//		cliServ.createCliente(cli);
+//		return "Cliente creado pa";
+//	}
+	
 	
 	@GetMapping("/traer/{id}")
 	public Cliente getCliente(@PathVariable Long id) {
@@ -38,11 +49,19 @@ public class ClienteController {
 		return cliServ.findClientes();
 	}
 	
-	@DeleteMapping("/eliminar/{id}")
-	public String deleteCliente(@PathVariable Long id) {
-		 cliServ.deleteCliente(id);
-		 return "Cliente eliminado rey";
+	@DeleteMapping("/eliminar/{dni}")
+	public ResponseEntity<Map<String, String>> eliminarCliente(@PathVariable("dni") String dni) {
+	    cliServ.deleteClienteByDni(dni);
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "Cliente eliminado con éxito");
+	    return ResponseEntity.ok(response);
 	}
+//	public String deleteCliente(@PathVariable("dni") String dni) {
+//		 cliServ.deleteClienteByDni(dni);
+//		 return "Cliente eliminado rey";
+//	}
+	
+	
 	
 	@PutMapping("/editar/{id}")
 	public Cliente editCliente(@PathVariable Long id, @RequestBody Cliente cli) {

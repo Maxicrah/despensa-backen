@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,6 +70,7 @@ public class ProductoController {
 	@GetMapping("/traer")
 	public List<Producto> getProducts(){
 		return prodServ.getProductos();
+		
 	}
 	
 	@DeleteMapping("/eliminar/{id}")
@@ -82,7 +82,36 @@ public class ProductoController {
 	}
 	
 	@PutMapping("/editar/{id}")
-	public Producto editProduct(@PathVariable (required = true) Long id, @RequestBody Producto prod) {
-		return prodServ.editProduct(id, prod);
+	public ResponseEntity<Producto> editProduct(@PathVariable Long id,
+	                                            @RequestParam("nombre") String nombre,
+	                                            @RequestParam("descripcion") String descripcion,
+	                                            @RequestParam("costo_adquisicion") Double costoAdquisicion,
+	                                            @RequestParam("fecha_vencimiento") LocalDate fechaVencimiento,
+	                                            @RequestParam("marca") String marca,
+	                                            @RequestParam("stock") Long stock,
+	                                            @RequestParam("promocion") String promocion,
+	                                            @RequestParam("notas_adicionales") String notasAdicionales,
+	                                            @RequestParam(value = "imagen", required = false) MultipartFile imagen) {
+	    Producto product = prodServ.getProducto(id);
+	    if (product == null) {
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    product.setNombre(nombre);
+	    product.setDescripcion(descripcion);
+	    product.setCosto_adquisicion(costoAdquisicion);
+	    product.setFecha_vencimiento(fechaVencimiento);
+	    product.setMarca(marca);
+	    product.setStock(stock);
+	    product.setPromocion(promocion);
+	    product.setNotas_adicionales(notasAdicionales);
+
+	    if (imagen != null && !imagen.isEmpty()) {
+	        String imageName = storageService.store(imagen);
+	        product.setImagen(imageName);
+	    }
+
+	    Producto updatedProducto = prodServ.editProduct(id, product);
+	    return ResponseEntity.ok(updatedProducto);
 	}
 }

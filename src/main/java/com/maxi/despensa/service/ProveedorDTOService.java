@@ -45,7 +45,6 @@ public class ProveedorDTOService implements IProveedorServiceDTO{
 	public ProductoDTO convertProductoToDTO(Producto prod) {
 
 		 ProductoDTO dto = new ProductoDTO();
-	        dto.setId_producto(prod.getId_producto());
 	        dto.setNombre(prod.getNombre());
 	        dto.setDescripcion(prod.getDescripcion());
 	        dto.setPrecio(prod.getPrecio());

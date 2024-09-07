@@ -28,6 +28,7 @@ public class Producto {
 	private Long id_producto;
 	private String nombre;
 	private String descripcion;
+	private Long cantidad;
 	@Column(nullable = false)
 	private Double precio;
 	private Double costo_adquisicion;
@@ -47,4 +48,5 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
+
 }

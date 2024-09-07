@@ -9,6 +9,8 @@ public interface IClienteService{
 	public Cliente findCliente(Long id);
 	//eliminar cliente
 	public void deleteCliente(Long id);
+	//eliminar cliente por dni
+	public void deleteClienteByDni(String dni);
 	//crear cliente
 	public void createCliente(Cliente cli);
 	//traer todos los clientes

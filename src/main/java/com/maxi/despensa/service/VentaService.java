@@ -29,54 +29,60 @@ public class VentaService implements IVentaService{
     
 	@Override
 	@Transactional
-	 public void createVenta(Venta venta) {
-        Cliente cliDB = clienteDAO.findClienteByDni(venta.getCliente().getDni());
-        Double total = 0.0;
-        if (cliDB == null) {
-            throw new RuntimeException("Cliente no encontrado");
-        }
-
-        List<Producto> productos = venta.getLista_productos();
+	   public void createVenta(Venta venta) {
+        // Validar cliente
+        Cliente cliDB = validateClient(venta.getCliente().getDni());
         
-        for (Producto producto : productos) {
-            Producto prodFromDB = productoDAO.findById(producto.getId_producto()).orElse(null);
-            
-            if (prodFromDB == null) {
-                System.out.println("Producto no encontrado en la base de datos: " + producto.getId_producto());
-                throw new RuntimeException("Producto no encontrado: " + producto.getId_producto());
-            }
+        // Validar productos y calcular el total
+        Double total = validateProductsAndCalculateTotal(venta.getLista_productos());
 
-            if (prodFromDB.getStock() <= 0) {
-                System.out.println("No hay stock suficiente para el producto: " + prodFromDB.getNombre());
-                throw new RuntimeException("No hay stock suficiente para el producto: " + prodFromDB.getNombre());
-            }
-            //asignar precio unitario producto a venta
-            venta.setPrecio_unitario_producto(prodFromDB.getPrecio());
-            //Calcular total venta
-            total += prodFromDB.getPrecio();
-            // Decrementar el stock
-            prodFromDB.setStock(prodFromDB.getStock() - 1);
-            productoDAO.save(prodFromDB); // Guarda los cambios en el producto
+        // Actualizar stock de productos
+        updateStock(venta.getLista_productos());
 
-            // Reemplazar el producto desacoplado por el producto gestionado
-            int index = productos.indexOf(producto);
-            productos.set(index, prodFromDB);
-            
-        }
-        //asignar fecha actual a venta
+        // Configurar detalles de la venta
         venta.setFecha_venta(LocalDate.now());
-        
-        //Asignar total venta a venta	
         venta.setTotal_venta(total);
-
-        // Actualizar la lista de productos en la venta con las entidades gestionadas
-        venta.setLista_productos(productos);
-   
-        // Asociar el cliente persistido a la venta
         venta.setCliente(cliDB);
 
         // Guardar la venta
         ventaDAO.save(venta);
+    }
+
+    private Cliente validateClient(String dni) {
+        Cliente cliDB = clienteDAO.findClienteByDni(dni);
+        if (cliDB == null) {
+            throw new RuntimeException("Cliente no encontrado");
+        }
+        return cliDB;
+    }
+
+    private Double validateProductsAndCalculateTotal(List<Producto> productos) {
+        if (productos == null || productos.isEmpty()) {
+            throw new RuntimeException("La lista de productos no puede estar vacía.");
+        }
+
+        Double total = 0.0;
+        for (Producto producto : productos) {
+            Producto prodFromDB = productoDAO.findById(producto.getId_producto()).orElse(null);
+            if (prodFromDB == null) {
+                throw new RuntimeException("Producto no encontrado: " + producto.getId_producto());
+            }
+            if (prodFromDB.getStock() < producto.getCantidad()) {
+                throw new RuntimeException("No hay stock suficiente para el producto: " + prodFromDB.getNombre());
+            }
+            total += prodFromDB.getPrecio() * producto.getCantidad();
+        }
+        return total;
+    }
+
+    private void updateStock(List<Producto> productos) {
+        for (Producto producto : productos) {
+            Producto prodFromDB = productoDAO.findById(producto.getId_producto()).orElse(null);
+            if (prodFromDB != null) {
+                prodFromDB.setStock(prodFromDB.getStock() - producto.getCantidad());
+                productoDAO.save(prodFromDB);
+            }
+        }
     }
 
 	@Override
@@ -105,6 +111,10 @@ public class VentaService implements IVentaService{
 		ven.setObservacion(venta.getObservacion());
 		return ventaDAO.save(ven);
 	}
+
+
+
+	
 	
 	
 	
