@@ -22,20 +22,17 @@ public class CuentaService implements ICuentaService{
 
 	@Override
 	public void eliminarCuenta(Long id) {
-		// TODO Auto-generated method stub
-		
+		cuentaDAO.deleteById(id);
 	}
 
 	@Override
 	public Cuenta traerCuenta(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return cuentaDAO.findById(id).orElse(null);
 	}
 
 	@Override
 	public List<Cuenta> traerCuentas() {
-		// TODO Auto-generated method stub
-		return null;
+		return cuentaDAO.findAll();
 	}
 
 	@Override
@@ -46,19 +43,37 @@ public class CuentaService implements ICuentaService{
 
 	@Override
 	public Cuenta crearCuenta(LocalDate fechaInicio, LocalDate fechaPago, Double totalMes, String dniCliente) {
+	    Cliente cli = clienteServ.findClienteByDni(dniCliente);
+	    
+	    if (cli == null) {
+	        throw new RuntimeException("Cliente no encontrado con el DNI: " + dniCliente);
+	    }
 
-			Cliente cli = clienteServ.findClienteByDni(dniCliente);
-			Cuenta account = new Cuenta();
-			if(!cli.equals(null)) {
-				account.setFechaInicio(fechaInicio = LocalDate.now());
-				account.setFechaPago(fechaPago = LocalDate.now().plusDays(30L));
-				account.setTotalMes(totalMes);
-				cli.setCuenta(account);
-				account.setUnCliente(cli);
-				return cuentaDAO.save(account);
-			}else {
-				return null;
-			}		
+	    Cuenta cuentaClienteBD = cli.getCuenta();
+	    if (cuentaClienteBD != null && cuentaClienteBD.getActivo()) {
+	        throw new RuntimeException("El cliente ya tiene una cuenta activa.");
+	    }
+
+	    Cuenta account = new Cuenta();
+	    account.setFechaInicio(LocalDate.now()); 
+	    account.setFechaPago(LocalDate.now().plusDays(30L)); 
+	    account.setTotalMes(totalMes);
+	    account.setActivo(true); 
+	    cli.setCuenta(account);
+	    account.setUnCliente(cli);
+
+	    return cuentaDAO.save(account);
+	}
+
+	@Override
+	public void cambiarEstadoCuenta(Long id) {
+		Cuenta cuenta = cuentaDAO.findById(id).orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+		if(cuenta.getActivo()) {
+			cuenta.setActivo(false);
+		}else {
+			cuenta.setActivo(true);
+		}
+		cuentaDAO.save(cuenta);
 	}
 
 }

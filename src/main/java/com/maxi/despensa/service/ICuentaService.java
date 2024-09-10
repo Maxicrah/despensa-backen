@@ -3,7 +3,6 @@ package com.maxi.despensa.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.maxi.despensa.dto.CuentaDTO;
 import com.maxi.despensa.model.Cuenta;
 
 public interface ICuentaService {
@@ -16,6 +15,8 @@ public interface ICuentaService {
      String dniCliente);
 	//eliminar cuenta
 	public void eliminarCuenta(Long id);
+	//poner cuenta inactiva
+	public void cambiarEstadoCuenta(Long id);
 	//traer cuenta
 	public Cuenta traerCuenta(Long id);
 	//traer todas cuentas

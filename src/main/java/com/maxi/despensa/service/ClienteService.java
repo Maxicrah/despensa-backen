@@ -1,5 +1,6 @@
 package com.maxi.despensa.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class ClienteService implements IClienteService{
         if (clienteExistente != null) {
             throw new RuntimeException("Cliente con DNI repetido: " + cli.getDni());
         }
+        cli.setFecha_registro(LocalDate.now());
         clienteDAO.save(cli);
     }
 
